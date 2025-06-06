@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Procesos{% endblock %}
+{% block content %}
+<h2>Lista de Procesos</h2>
+
+<a href="{% url 'crear_proceso' %}" class="btn btn-primary mb-3">➕ Nuevo Proceso</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for proceso in procesos %}
+    <tr>
+      <td>{{ proceso.nombre }}</td>
+      <td>{{ proceso.estado|title }}</td>
+      <td>
+        <a class="btn btn-warning btn-sm" href="{% url 'editar_proceso' proceso.id %}">✏️ Editar</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'eliminar_proceso' proceso.id %}">🗑️ Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

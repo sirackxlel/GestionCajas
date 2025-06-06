@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Crear Entidad{% endblock %}
+{% block content %}
+<h2>🏢 Crear Entidad</h2>
+
+<form method="POST">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="nombre" class="form-label">Nombre</label>
+    <input type="text" name="nombre" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="proceso" class="form-label">Proceso Asociado</label>
+    <select name="proceso" class="form-select" required>
+      {% for proceso in procesos %}
+        <option value="{{ proceso.id }}">{{ proceso.nombre }} ({{ proceso.estado }})</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-success">Guardar</button>
+  <a href="{% url 'lista_entidades' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

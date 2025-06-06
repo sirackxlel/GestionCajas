@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Entidades{% endblock %}
+{% block content %}
+<h2>Lista de Entidades</h2>
+
+<a href="{% url 'crear_entidad' %}" class="btn btn-primary mb-3">➕ Nueva Entidad</a>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Proceso</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entidad in entidades %}
+    <tr>
+      <td>{{ entidad.nombre }}</td>
+      <td>{{ entidad.proceso.nombre }} ({{ entidad.proceso.estado }})</td>
+      <td>
+        <a class="btn btn-warning btn-sm" href="{% url 'editar_entidad' entidad.id %}">✏️ Editar</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'eliminar_entidad' entidad.id %}">🗑️ Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

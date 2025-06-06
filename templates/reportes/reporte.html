@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}📈 Generar Reportes{% endblock %}
+
+{% block content %}
+<h2>📊 Generador de Reportes</h2>
+
+<form method="GET" action="{% url 'reporte_excel' %}" class="row g-3 mb-4">
+  <div class="col-md-3">
+    <label class="form-label">Fecha desde</label>
+    <input type="date" name="fecha_inicio" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Fecha hasta</label>
+    <input type="date" name="fecha_fin" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Entidad</label>
+    <select name="entidad" class="form-select">
+      <option value="">Todas</option>
+      {% for entidad in entidades %}
+        <option value="{{ entidad.id }}">{{ entidad.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Estado del Proceso</label>
+    <select name="estado" class="form-select">
+      <option value="">Todos</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="en_curso">En Curso</option>
+      <option value="finalizado">Finalizado</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Usuario</label>
+    <select name="usuario" class="form-select">
+      <option value="">Todos</option>
+      {% for u in usuarios %}
+        <option value="{{ u.id }}">{{ u.username }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-12">
+    <button type="submit" class="btn btn-success">📥 Exportar a Excel</button>
+  </div>
+</form>
+{% endblock %}
