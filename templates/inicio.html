@@ -1,6 +1,54 @@
 {% extends 'base.html' %}
 {% block title %}Inicio{% endblock %}
 {% block content %}
-<h2>🏠 Bienvenido al Sistema Integral de Gestión de Cajas</h2>
-<p>Seleccioná una sección desde el menú para comenzar.</p>
+<h2 class="mb-4">🏠 Bienvenido al Sistema Integral de Gestión de Cajas</h2>
+<style>
+    .card.bg-primary    { background-color: rgba(0, 100, 250, 0.7) !important; }
+    .card.bg-success    { background-color: rgba(25, 135, 84, 0.7) !important; }
+    .card.bg-info       { background-color: rgba(240, 134, 13, 0.7) !important; }
+    .card.bg-warning    { background-color: rgba(255, 193, 7, 0.7) !important; }
+    .card.bg-secondary  { background-color: rgba(108, 117, 125, 0.7) !important; }
+</style>
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+    <div class="col">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total de Cajas</h5>
+                <p class="display-6 m-0">{{ total_cajas }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Entidad Activa</h5>
+                <p class="display-6 m-0">{{ entidad_activa.nombre|default:'-' }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Cajas de la Entidad Activa</h5>
+                <p class="display-6 m-0">{{ cajas_entidad_activa }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-dark bg-warning h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Cajas del Proceso</h5>
+                <p class="display-6 m-0">{{ cajas_proceso }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-white bg-secondary h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Última Caja Asignada</h5>
+                <p class="display-6 m-0">{{ ultima_caja.numero|default:'-' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

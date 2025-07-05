@@ -110,4 +110,27 @@ def historial(request):
 
 @login_required
 def inicio(request):
-    return render(request, 'inicio.html')
+    total_cajas = Caja.objects.count()
+    entidad_activa = Entidad.objects.filter(activa=True).first()
+
+    if entidad_activa:
+        cajas_entidad_activa = Caja.objects.filter(entidad=entidad_activa).count()
+        cajas_proceso = Caja.objects.filter(entidad__proceso=entidad_activa.proceso).count()
+    else:
+        cajas_entidad_activa = 0
+        cajas_proceso = 0
+
+    ultima_caja = (
+        Caja.objects.filter(responsable=request.user)
+        .order_by('-fecha_asignacion')
+        .first()
+    )
+
+    context = {
+        'total_cajas': total_cajas,
+        'entidad_activa': entidad_activa,
+        'cajas_entidad_activa': cajas_entidad_activa,
+        'cajas_proceso': cajas_proceso,
+        'ultima_caja': ultima_caja,
+    }
+    return render(request, 'inicio.html', context)
