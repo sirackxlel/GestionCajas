@@ -19,7 +19,6 @@
       <td>{{ entidad.nombre }}</td>
       <td>{{ entidad.proceso.nombre }} ({{ entidad.proceso.estado }})</td>
       <td>
-        <a class="btn btn-warning btn-sm" href="{% url 'editar_entidad' entidad.id %}">✏️ Editar</a>
         <a class="btn btn-danger btn-sm" href="{% url 'eliminar_entidad' entidad.id %}">🗑️ Eliminar</a>
       </td>
     </tr>

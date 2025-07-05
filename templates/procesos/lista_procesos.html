@@ -19,7 +19,6 @@
       <td>{{ proceso.nombre }}</td>
       <td>{{ proceso.estado|title }}</td>
       <td>
-        <a class="btn btn-warning btn-sm" href="{% url 'editar_proceso' proceso.id %}">✏️ Editar</a>
         <a class="btn btn-danger btn-sm" href="{% url 'eliminar_proceso' proceso.id %}">🗑️ Eliminar</a>
       </td>
     </tr>

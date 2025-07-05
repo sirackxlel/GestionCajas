@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Editar Caja{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+  <div class="card p-4 shadow-sm" style="width: 100%; max-width: 500px;">
+    <h2 class="mb-4 text-center">
+      ✏️ Editar Caja
+    </h2>
+
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{% url 'lista_cajas' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

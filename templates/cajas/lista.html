@@ -26,7 +26,9 @@
         {% if not caja.responsable %}
         <a href="{% url 'asignar_caja' caja.id %}" class="btn btn-success btn-sm">👤 Asignarme</a>
         {% endif %}
+        {% if request.user.is_staff %}
         <a href="{% url 'editar_caja' caja.id %}" class="btn btn-warning btn-sm">✏️ Editar</a>
+        {% endif %}
         <a href="{% url 'eliminar_caja' caja.id %}" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
       </td>
     </tr>
