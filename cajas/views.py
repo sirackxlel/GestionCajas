@@ -7,6 +7,7 @@ from django.utils import timezone
 from entidades.models import Entidad
 from .forms import CajaForm
 from usuarios.models import Usuario
+from django.contrib import messages
 
 @login_required
 def asignar_caja(request):
@@ -36,6 +37,7 @@ def asignar_caja(request):
     if not caja:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'ok': False, 'mensaje': 'No hay cajas disponibles'})
+        messages.error(request, 'No hay cajas disponibles')
         return redirect('lista_cajas')
 
     caja.responsable = request.user
@@ -44,6 +46,7 @@ def asignar_caja(request):
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True, 'mensaje': 'Caja asignada correctamente'})
+    messages.success(request, 'Caja asignada correctamente')
     return redirect('historial')
 @login_required
 def crear_caja(request):

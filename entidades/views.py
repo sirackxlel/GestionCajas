@@ -1,7 +1,7 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Entidad, Proceso
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
 
 # CREAR
 @login_required
@@ -32,6 +32,17 @@ def editar_entidad(request, entidad_id):
         return redirect('lista_entidades')
     procesos = Proceso.objects.all()
     return render(request, 'entidades/editar_entidad.html', {'entidad': entidad, 'procesos': procesos})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def priorizar_entidad(request, entidad_id):
+    entidad = get_object_or_404(Entidad, id=entidad_id)
+    Entidad.objects.update(activa=False)
+    entidad.activa = True
+    entidad.save()
+    messages.success(request, 'Entidad priorizada correctamente')
+    return redirect('lista_entidades')
+
 
 # ELIMINAR
 @login_required

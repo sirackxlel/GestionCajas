@@ -19,6 +19,9 @@
       <td>{{ entidad.nombre }}</td>
       <td>{{ entidad.proceso.nombre }} ({{ entidad.proceso.estado }})</td>
       <td>
+        {% if request.user.is_staff %}
+        <a class="btn btn-primary btn-sm" href="{% url 'priorizar_entidad' entidad.id %}">Priorizar Entidad</a>
+        {% endif %}
         <a class="btn btn-danger btn-sm" href="{% url 'eliminar_entidad' entidad.id %}">🗑️ Eliminar</a>
       </td>
     </tr>
