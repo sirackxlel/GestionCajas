@@ -8,8 +8,34 @@ from entidades.models import Entidad
 from .forms import CajaForm
 
 @login_required
-def asignar_caja(request, caja_id):
-    caja = get_object_or_404(Caja, id=caja_id)
+def asignar_caja(request):
+    # Obtener entidad activa o activarla si no existe
+    entidad = Entidad.objects.filter(activa=True).first()
+
+    if not entidad:
+        entidad = Entidad.objects.filter(caja__responsable__isnull=True).order_by('?').first()
+        if entidad:
+            entidad.activa = True
+            entidad.save()
+
+    if entidad:
+        caja = Caja.objects.filter(entidad=entidad, responsable__isnull=True).order_by('?').first()
+        if not caja:
+            # No hay cajas libres en la entidad activa -> desactivarla y buscar otra
+            entidad.activa = False
+            entidad.save()
+            nueva_entidad = Entidad.objects.filter(caja__responsable__isnull=True).order_by('?').first()
+            if nueva_entidad:
+                nueva_entidad.activa = True
+                nueva_entidad.save()
+                caja = Caja.objects.filter(entidad=nueva_entidad, responsable__isnull=True).order_by('?').first()
+    else:
+        caja = None
+
+    if not caja:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'ok': False, 'mensaje': 'No hay cajas disponibles'})
+        return redirect('lista_cajas')
 
     caja.responsable = request.user
     caja.fecha_asignacion = timezone.now().date()
@@ -17,8 +43,7 @@ def asignar_caja(request, caja_id):
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'ok': True, 'mensaje': 'Caja asignada correctamente'})
-    else:
-        return redirect('historial') 
+    return redirect('historial')
 @login_required
 def crear_caja(request):
     if request.method == 'POST':

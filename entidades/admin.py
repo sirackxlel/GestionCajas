@@ -8,6 +8,6 @@ class ProcesoAdmin(admin.ModelAdmin):
 
 @admin.register(Entidad)
 class EntidadAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'proceso')
+    list_display = ('nombre', 'proceso', 'activa')
     search_fields = ('nombre',)
-    list_filter = ('proceso',)
+    list_filter = ('proceso', 'activa')
