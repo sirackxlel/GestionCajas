@@ -61,7 +61,10 @@ def crear_proceso(request):
     if request.method == 'POST':
         nombre = request.POST['nombre']
         estado = request.POST['estado']
-        Proceso.objects.create(nombre=nombre, estado=estado)
+        proceso = Proceso.objects.create(nombre=nombre, estado=estado)
+        entidades = [Entidad(nombre=str(i), proceso=proceso) for i in range(1, 301)]
+        Entidad.objects.bulk_create(entidades)
+        return redirect('lista_procesos')
         return redirect('lista_procesos')
     return render(request, 'procesos/crear_proceso.html')
 

@@ -9,7 +9,6 @@
   <thead>
     <tr>
       <th>Nombre</th>
-      <th>Proceso</th>
       <th>Acciones</th>
     </tr>
   </thead>
@@ -17,12 +16,13 @@
     {% for entidad in entidades %}
     <tr>
       <td>{{ entidad.nombre }}</td>
-      <td>{{ entidad.proceso.nombre }} ({{ entidad.proceso.estado }})</td>
       <td>
+        {% if request.user.is_staff and entidad.proceso.estado == 'en_curso' %}
         {% if request.user.is_staff %}
         <a class="btn btn-primary btn-sm" href="{% url 'priorizar_entidad' entidad.id %}">Priorizar Entidad</a>
         {% endif %}
         <a class="btn btn-danger btn-sm" href="{% url 'eliminar_entidad' entidad.id %}">🗑️ Eliminar</a>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}
