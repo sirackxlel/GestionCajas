@@ -1,2 +1,60 @@
-<!-- cajas/templates/cajas/historial.html -->
-<h1>Historial de Cajas</h1>
+{% extends 'base.html' %}
+
+{% block title %}Historial{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Historial de Cajas</h2>
+
+{% if admin_view %}
+  {% for usuario, cajas in cajas_por_usuario.items %}
+    <h3 class="mt-4">{{ usuario.username }}</h3>
+    {% if cajas %}
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Número</th>
+          <th>Entidad</th>
+          <th>Fecha Asignación</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for caja in cajas %}
+        <tr>
+          <td>{{ caja.numero }}</td>
+          <td>{{ caja.entidad.nombre }}</td>
+          <td>{{ caja.fecha_asignacion|date:"d/m/Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="text-muted">Sin cajas asignadas.</p>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% if cajas %}
+  <table class="table table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Número</th>
+        <th>Entidad</th>
+        <th>Fecha Asignación</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for caja in cajas %}
+      <tr>
+        <td>{{ caja.numero }}</td>
+        <td>{{ caja.entidad.nombre }}</td>
+        <td>{{ caja.fecha_asignacion|date:"d/m/Y" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="text-muted">No tienes cajas asignadas.</p>
+  {% endif %}
+{% endif %}
+
+{% endblock %}
+
