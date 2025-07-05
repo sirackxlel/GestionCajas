@@ -17,7 +17,17 @@
     {% for proceso in procesos %}
     <tr>
       <td>{{ proceso.nombre }}</td>
-      <td>{{ proceso.estado|title }}</td>
+      <td>
+        <form action="{% url 'cambiar_estado_proceso' proceso.id %}" method="post" class="d-inline">
+          {% csrf_token %}
+            <select name="estado" class="form-select form-select-sm d-inline w-auto">
+              <option value="pendiente" {% if proceso.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+              <option value="en_curso" {% if proceso.estado == 'en_curso' %}selected{% endif %}>En Curso</option>
+              <option value="finalizado" {% if proceso.estado == 'finalizado' %}selected{% endif %}>Finalizado</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        </form>
+      </td>
       <td>
         <a class="btn btn-danger btn-sm" href="{% url 'eliminar_proceso' proceso.id %}">🗑️ Eliminar</a>
       </td>

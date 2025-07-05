@@ -91,3 +91,20 @@ def eliminar_proceso(request, proceso_id):
     proceso = get_object_or_404(Proceso, id=proceso_id)
     proceso.delete()
     return redirect('lista_procesos')
+    
+@login_required
+def cambiar_estado_proceso(request, proceso_id):
+    """Actualizar el estado de un proceso desde la lista."""
+    proceso = get_object_or_404(Proceso, id=proceso_id)
+    if request.method == 'POST':
+        nuevo_estado = request.POST.get('estado')
+        if nuevo_estado:
+            if nuevo_estado == "en_curso":
+                # Solo puede haber un proceso en curso a la vez
+                (Proceso.objects
+                        .filter(estado="en_curso")
+                        .exclude(id=proceso_id)
+                        .update(estado="pendiente"))
+            proceso.estado = nuevo_estado
+            proceso.save()
+    return redirect('lista_procesos')

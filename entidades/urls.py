@@ -14,4 +14,6 @@ urlpatterns = [
     path('procesos/crear/', views.crear_proceso, name='crear_proceso'),
     path('procesos/editar/<int:proceso_id>/', views.editar_proceso, name='editar_proceso'),
     path('procesos/eliminar/<int:proceso_id>/', views.eliminar_proceso, name='eliminar_proceso'),
+    path('procesos/estado/<int:proceso_id>/', views.cambiar_estado_proceso, name='cambiar_estado_proceso'),
+
 ]
