@@ -18,7 +18,7 @@
     <select name="entidad" class="form-select">
       <option value="">Todas</option>
       {% for entidad in entidades %}
-        <option value="{{ entidad.id }}">{{ entidad.nombre }}</option>
+      <option value="{{ entidad.id }}">{{ entidad.nombre }}</option>
       {% endfor %}
     </select>
   </div>
@@ -36,13 +36,32 @@
     <select name="usuario" class="form-select">
       <option value="">Todos</option>
       {% for u in usuarios %}
-        <option value="{{ u.id }}">{{ u.username }}</option>
+      <option value="{{ u.id }}">{{ u.username }}</option>
       {% endfor %}
     </select>
   </div>
 
   <div class="col-md-12">
     <button type="submit" class="btn btn-success">📥 Exportar a Excel</button>
+  </div>
+</form>
+
+<form method="GET" action="{% url 'reporte_pdf' %}" class="row g-3">
+  <div class="col-md-3">
+    <label class="form-label">Mes</label>
+    <input type="month" name="mes" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">Proceso</label>
+    <select name="proceso" class="form-select">
+      <option value="">Todos</option>
+      {% for p in procesos %}
+      <option value="{{ p.id }}">{{ p.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-12">
+    <button type="submit" class="btn btn-danger">📄 Exportar a PDF</button>
   </div>
 </form>
 {% endblock %}

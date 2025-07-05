@@ -5,7 +5,13 @@ from entidades.models import Entidad, Proceso
 from django.http import HttpResponse
 import pandas as pd
 from django.utils.dateparse import parse_date
-
+from usuarios.models import Usuario
+import pandas as pd
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+import io
 @login_required
 def generar_reporte_excel(request):
     cajas = Caja.objects.select_related('entidad__proceso', 'responsable').all()
@@ -47,10 +53,72 @@ def generar_reporte_excel(request):
     return response
 
 @login_required
+def generar_reporte_pdf(request):
+    """Genera un reporte en formato PDF filtrado por mes y proceso."""
+    cajas = Caja.objects.select_related('entidad__proceso', 'responsable').all()
+
+    mes = request.GET.get('mes')
+    proceso_id = request.GET.get('proceso')
+
+    if mes:
+        try:
+            year, month = mes.split('-')
+            cajas = cajas.filter(
+                fecha_asignacion__year=int(year),
+                fecha_asignacion__month=int(month),
+            )
+        except ValueError:
+            pass
+
+    if proceso_id:
+        cajas = cajas.filter(entidad__proceso_id=proceso_id)
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
+    elements = [Paragraph('Reporte de Cajas', styles['Heading1'])]
+
+    data = [['Número', 'Entidad', 'Proceso', 'Responsable', 'Fecha Asignación']]
+    for c in cajas:
+        data.append([
+            c.numero,
+            c.entidad.nombre if c.entidad else '',
+            c.entidad.proceso.nombre if c.entidad else '',
+            c.responsable.username if c.responsable else '',
+            c.fecha_asignacion.strftime('%Y-%m-%d') if c.fecha_asignacion else '',
+        ])
+
+    table = Table(data, repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+            ]
+        )
+    )
+    elements.append(table)
+    doc.build(elements)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_cajas.pdf"'
+    return response
+
+@login_required
 def formulario_reporte(request):
     entidades = Entidad.objects.all()
     usuarios = Usuario.objects.all()
-    return render(request, 'reportes/reporte.html', {
-        'entidades': entidades,
-        'usuarios': usuarios
-    })
+    procesos = Proceso.objects.all()
+    return render(
+        request,
+        'reportes/reporte.html',
+        {
+            'entidades': entidades,
+            'usuarios': usuarios,
+            'procesos': procesos,
+        },
+    )
