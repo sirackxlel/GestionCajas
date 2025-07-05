@@ -8,12 +8,26 @@ from entidades.models import Entidad
 from .forms import CajaForm
 from usuarios.models import Usuario
 from django.contrib import messages
+from django.db.models import Count, Q
 
 @login_required
 def asignar_caja(request):
     # Obtener entidad activa o activarla si no existe
     entidad = Entidad.objects.filter(activa=True).first()
+    caja = None
 
+    if not entidad or not Caja.objects.filter(entidad=entidad, responsable__isnull=True).exists():
+        if entidad:
+            entidad.activa = False
+            entidad.save()
+
+        entidad = (
+            Entidad.objects
+            .annotate(cajas_libres=Count('caja', filter=Q(caja__responsable__isnull=True)))
+            .filter(cajas_libres__gt=0)
+            .order_by('-cajas_libres')
+            .first()
+        )
     if not entidad:
         entidad = Entidad.objects.filter(caja__responsable__isnull=True).order_by('?').first()
         if entidad:
@@ -21,18 +35,7 @@ def asignar_caja(request):
             entidad.save()
 
     if entidad:
-        caja = Caja.objects.filter(entidad=entidad, responsable__isnull=True).order_by('?').first()
-        if not caja:
-            # No hay cajas libres en la entidad activa -> desactivarla y buscar otra
-            entidad.activa = False
-            entidad.save()
-            nueva_entidad = Entidad.objects.filter(caja__responsable__isnull=True).order_by('?').first()
-            if nueva_entidad:
-                nueva_entidad.activa = True
-                nueva_entidad.save()
-                caja = Caja.objects.filter(entidad=nueva_entidad, responsable__isnull=True).order_by('?').first()
-    else:
-        caja = None
+        caja = Caja.objects.filter(entidad=entidad, responsable__isnull=True).first()
 
     if not caja:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -50,7 +53,10 @@ def asignar_caja(request):
     caja.save()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'ok': True, 'mensaje': 'Caja asignada correctamente'})
+        return JsonResponse({
+            'ok': True,
+            'mensaje': f'Caja asignada correctamente: Caja #{caja.numero}'  # <-- mostrar número o id
+        })
     messages.success(request, 'Caja asignada correctamente')
     return redirect('historial')
     
