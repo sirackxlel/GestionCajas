@@ -6,6 +6,7 @@ from .models import Caja
 from django.utils import timezone
 from entidades.models import Entidad
 from .forms import CajaForm
+from usuarios.models import Usuario
 
 @login_required
 def asignar_caja(request):
@@ -83,8 +84,26 @@ def eliminar_caja(request, caja_id):
 
 @login_required
 def historial(request):
-    cajas = Caja.objects.filter(responsable=request.user)
-    return render(request, 'cajas/historial.html', {'cajas': cajas})
+    """Muestra el historial de cajas asignadas."""
+    if request.user.is_staff:
+        User = Usuario
+        usuarios = User.objects.all()
+        cajas_por_usuario = {
+            usuario: Caja.objects.filter(responsable=usuario)
+            .order_by('-fecha_asignacion')
+            for usuario in usuarios
+        }
+        context = {
+            'admin_view': True,
+            'cajas_por_usuario': cajas_por_usuario,
+        }
+    else:
+        cajas = Caja.objects.filter(responsable=request.user).order_by('-fecha_asignacion')
+        context = {
+            'admin_view': False,
+            'cajas': cajas,
+        }
+    return render(request, 'cajas/historial.html', context)
 
 @login_required
 def inicio(request):
