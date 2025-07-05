@@ -3,20 +3,20 @@
     <a class="navbar-brand" href="{% url 'inicio' %}">Sistema Cajas</a>
     <div class="collapse navbar-collapse justify-content-between">
       <ul class="navbar-nav me-auto">
+        {% if request.user.is_authenticated %}
+
         <li class="nav-item"><a class="nav-link" href="{% url 'lista_cajas' %}">📦 Cajas</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'historial' %}">👤 Mi Historial</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'lista_entidades' %}">🏢 Entidades</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'lista_procesos' %}">⚙️ Procesos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'reporte_excel' %}">📈 Reportes</a></li>
-
         {% if request.user.is_staff %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'reporte_excel' %}">📈 Reportes</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'registrar_usuario' %}">👥 Crear Usuario</a></li>
-          <a class="nav-link" href="{% url 'listar_usuarios' %}">👥 Usuarios</a>
+        <a class="nav-link" href="{% url 'listar_usuarios' %}">👥 Usuarios</a>
 
         {% endif %}
       </ul>
 
-      {% if request.user.is_authenticated %}
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <form method="POST" action="{% url 'logout' %}" class="d-inline">

@@ -3,7 +3,9 @@
 {% block content %}
 <h2>📦 Listado de Cajas</h2>
 
+{% if request.user.is_staff %}
 <a href="{% url 'crear_caja' %}" class="btn btn-primary mb-3">➕ Nueva Caja</a>
+{% endif %}
 <a href="{% url 'asignar_caja' %}" id="btn-asignarme" class="btn btn-success mb-3">👤 Asignarme</a>
 
 <table class="table table-striped table-bordered">
@@ -13,7 +15,7 @@
       <th>Entidad</th>
       <th>Responsable</th>
       <th>Fecha Asignación</th>
-      <th>Acciones</th>
+      {% if request.user.is_staff %}<th>Acciones</th>{% endif %}
     </tr>
   </thead>
   <tbody>
@@ -23,12 +25,12 @@
       <td>{{ caja.entidad.nombre }}</td>
       <td>{{ caja.responsable.username|default:"Sin asignar" }}</td>
       <td>{{ caja.fecha_asignacion|date:"d/m/Y" }}</td>
+      {% if request.user.is_staff %}
       <td>
-        {% if request.user.is_staff %}
         <a href="{% url 'editar_caja' caja.id %}" class="btn btn-warning btn-sm">✏️ Editar</a>
-        {% endif %}
         <a href="{% url 'eliminar_caja' caja.id %}" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
       </td>
+      {% endif %}
     </tr>
     {% endfor %}
   </tbody>
