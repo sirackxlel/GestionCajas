@@ -46,11 +46,36 @@
   </div>
 </form>
 
-<form method="GET" action="{% url 'reporte_pdf' %}" class="row g-3">
+<form method="GET" action="{% url 'reporte_pdf' %}" class="row g-3" id="form-reporte-pdf">
   <div class="col-md-3">
+    <label class="form-label">Tipo de reporte</label>
+    <select name="tipo" class="form-select" id="tipo-reporte">
+      <option value="mensual">Mensual</option>
+      <option value="anual">Anual</option>
+      <option value="personalizado">Personalizado</option>
+    </select>
+  </div>
+
+  <div class="col-md-3 campo-mes">
     <label class="form-label">Mes</label>
     <input type="month" name="mes" class="form-control">
   </div>
+
+  <div class="col-md-3 campo-anio">
+    <label class="form-label">Año</label>
+    <input type="number" name="year" class="form-control" placeholder="Ej: 2025">
+  </div>
+
+  <div class="col-md-3 campo-fechas">
+    <label class="form-label">Fecha desde</label>
+    <input type="date" name="fecha_inicio" class="form-control">
+  </div>
+
+  <div class="col-md-3 campo-fechas">
+    <label class="form-label">Fecha hasta</label>
+    <input type="date" name="fecha_fin" class="form-control">
+  </div>
+
   <div class="col-md-3">
     <label class="form-label">Proceso</label>
     <select name="proceso" class="form-select">
@@ -60,8 +85,30 @@
       {% endfor %}
     </select>
   </div>
+
   <div class="col-md-12">
     <button type="submit" class="btn btn-danger">📄 Exportar a PDF</button>
   </div>
 </form>
+
+<script>
+  function actualizarCampos() {
+    const tipo = document.getElementById('tipo-reporte').value;
+    document.querySelectorAll('.campo-mes, .campo-anio, .campo-fechas').forEach(el => el.style.display = 'none');
+
+    if (tipo === 'mensual') {
+      document.querySelector('.campo-mes').style.display = 'block';
+    } else if (tipo === 'anual') {
+      document.querySelector('.campo-anio').style.display = 'block';
+    } else if (tipo === 'personalizado') {
+      document.querySelectorAll('.campo-fechas').forEach(el => el.style.display = 'block');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    actualizarCampos(); // Al cargar
+    document.getElementById('tipo-reporte').addEventListener('change', actualizarCampos);
+  });
+</script>
+
 {% endblock %}

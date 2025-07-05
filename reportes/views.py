@@ -54,11 +54,35 @@ def generar_reporte_excel(request):
 
 @login_required
 def generar_reporte_pdf(request):
-    """Genera un reporte en formato PDF filtrado por mes y proceso."""
-    cajas = Caja.objects.select_related('entidad__proceso', 'responsable').all()
+    """Genera un reporte en formato PDF filtrado por tipo y proceso."""
+    cajas = Caja.objects.select_related("entidad__proceso", "responsable").all()
 
-    mes = request.GET.get('mes')
-    proceso_id = request.GET.get('proceso')
+    tipo = request.GET.get("tipo", "mensual")
+    mes = request.GET.get("mes")
+    year = request.GET.get("year")
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    proceso_id = request.GET.get("proceso")
+
+    if tipo == "mensual" and mes:
+        try:
+            y, m = mes.split("-")
+            cajas = cajas.filter(
+                fecha_asignacion__year=int(y),
+                fecha_asignacion__month=int(m),
+            )
+        except ValueError:
+            pass
+    elif tipo == "anual" and year:
+        try:
+            cajas = cajas.filter(fecha_asignacion__year=int(year))
+        except ValueError:
+            pass
+    elif tipo == "personalizado":
+        if fecha_inicio:
+            cajas = cajas.filter(fecha_asignacion__gte=parse_date(fecha_inicio))
+        if fecha_fin:
+            cajas = cajas.filter(fecha_asignacion__lte=parse_date(fecha_fin))
 
     if mes:
         try:
