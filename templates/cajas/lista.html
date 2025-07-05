@@ -15,6 +15,7 @@
       <th>Entidad</th>
       <th>Responsable</th>
       <th>Fecha Asignación</th>
+      <th>Fecha Finalización</th>
       {% if request.user.is_staff %}<th>Acciones</th>{% endif %}
     </tr>
   </thead>
@@ -25,6 +26,7 @@
       <td>{{ caja.entidad.nombre }}</td>
       <td>{{ caja.responsable.username|default:"Sin asignar" }}</td>
       <td>{{ caja.fecha_asignacion|date:"d/m/Y" }}</td>
+      <td>{{ caja.fecha_finalizacion|date:"d/m/Y"|default:"-" }}</td>
       {% if request.user.is_staff %}
       <td>
         <a href="{% url 'editar_caja' caja.id %}" class="btn btn-warning btn-sm">✏️ Editar</a>

@@ -8,6 +8,7 @@ class Caja(models.Model):
     entidad = models.ForeignKey(Entidad, on_delete=models.SET_NULL, null=True, blank=True)
     responsable = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_asignacion = models.DateField(null=True, blank=True)
+    fecha_finalizacion = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"Caja #{self.numero}"

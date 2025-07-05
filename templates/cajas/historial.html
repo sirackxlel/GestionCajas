@@ -15,6 +15,7 @@
           <th>Número</th>
           <th>Entidad</th>
           <th>Fecha Asignación</th>
+          <th>Fecha Finalización</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +24,7 @@
           <td>{{ caja.numero }}</td>
           <td>{{ caja.entidad.nombre }}</td>
           <td>{{ caja.fecha_asignacion|date:"d/m/Y" }}</td>
+          <td>{{ caja.fecha_finalizacion|date:"d/m/Y"|default:"-" }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -39,6 +41,7 @@
         <th>Número</th>
         <th>Entidad</th>
         <th>Fecha Asignación</th>
+        <th>Fecha Finalización</th>
       </tr>
     </thead>
     <tbody>
@@ -47,6 +50,7 @@
         <td>{{ caja.numero }}</td>
         <td>{{ caja.entidad.nombre }}</td>
         <td>{{ caja.fecha_asignacion|date:"d/m/Y" }}</td>
+        <td>{{ caja.fecha_finalizacion|date:"d/m/Y"|default:"-" }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -57,4 +61,3 @@
 {% endif %}
 
 {% endblock %}
-

@@ -39,9 +39,14 @@ def asignar_caja(request):
             return JsonResponse({'ok': False, 'mensaje': 'No hay cajas disponibles'})
         messages.error(request, 'No hay cajas disponibles')
         return redirect('lista_cajas')
+    
+    hoy = timezone.now().date()
+    # Marcar como finalizadas las cajas activas del usuario
+    Caja.objects.filter(responsable=request.user, fecha_finalizacion__isnull=True).update(fecha_finalizacion=hoy)
 
     caja.responsable = request.user
-    caja.fecha_asignacion = timezone.now().date()
+    caja.fecha_asignacion = hoy
+    caja.fecha_finalizacion = None
     caja.save()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
