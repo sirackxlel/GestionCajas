@@ -4,15 +4,37 @@
 {% block content %}
 <h2>📊 Generador de Reportes</h2>
 
-<form method="GET" action="{% url 'reporte_excel' %}" class="row g-3 mb-4">
+<!-- Formulario Excel -->
+<form method="GET" action="{% url 'reporte_excel' %}" class="row g-3 mb-4" id="form-reporte-excel">
   <div class="col-md-3">
+    <label class="form-label">Tipo de reporte</label>
+    <select name="tipo" class="form-select" id="tipo-reporte-excel">
+      <option value="mensual">Mensual</option>
+      <option value="anual">Anual</option>
+      <option value="personalizado">Personalizado</option>
+    </select>
+  </div>
+
+  <div class="col-md-3 campo-mes-excel">
+    <label class="form-label">Mes</label>
+    <input type="month" name="mes" class="form-control">
+  </div>
+
+  <div class="col-md-3 campo-anio-excel">
+    <label class="form-label">Año</label>
+    <input type="number" name="year" class="form-control" placeholder="Ej: 2025">
+  </div>
+
+  <div class="col-md-3 campo-fechas-excel">
     <label class="form-label">Fecha desde</label>
     <input type="date" name="fecha_inicio" class="form-control">
   </div>
-  <div class="col-md-3">
+
+  <div class="col-md-3 campo-fechas-excel">
     <label class="form-label">Fecha hasta</label>
     <input type="date" name="fecha_fin" class="form-control">
   </div>
+
   <div class="col-md-3">
     <label class="form-label">Entidad</label>
     <select name="entidad" class="form-select">
@@ -22,6 +44,7 @@
       {% endfor %}
     </select>
   </div>
+
   <div class="col-md-3">
     <label class="form-label">Estado del Proceso</label>
     <select name="estado" class="form-select">
@@ -31,6 +54,7 @@
       <option value="finalizado">Finalizado</option>
     </select>
   </div>
+
   <div class="col-md-3">
     <label class="form-label">Usuario</label>
     <select name="usuario" class="form-select">
@@ -46,6 +70,7 @@
   </div>
 </form>
 
+<!-- Formulario PDF -->
 <form method="GET" action="{% url 'reporte_pdf' %}" class="row g-3" id="form-reporte-pdf">
   <div class="col-md-3">
     <label class="form-label">Tipo de reporte</label>
@@ -91,22 +116,38 @@
   </div>
 </form>
 
+<!-- JS para mostrar/ocultar campos -->
 <script>
-  function actualizarCampos() {
-    const tipo = document.getElementById('tipo-reporte').value;
-    document.querySelectorAll('.campo-mes, .campo-anio, .campo-fechas').forEach(el => el.style.display = 'none');
+  function actualizarCamposExcel() {
+    const tipo = document.getElementById('tipo-reporte-excel').value;
+    document.querySelectorAll('#form-reporte-excel .campo-mes-excel, #form-reporte-excel .campo-anio-excel, #form-reporte-excel .campo-fechas-excel').forEach(el => el.style.display = 'none');
 
     if (tipo === 'mensual') {
-      document.querySelector('.campo-mes').style.display = 'block';
+      document.querySelector('#form-reporte-excel .campo-mes-excel').style.display = 'block';
     } else if (tipo === 'anual') {
-      document.querySelector('.campo-anio').style.display = 'block';
+      document.querySelector('#form-reporte-excel .campo-anio-excel').style.display = 'block';
     } else if (tipo === 'personalizado') {
-      document.querySelectorAll('.campo-fechas').forEach(el => el.style.display = 'block');
+      document.querySelectorAll('#form-reporte-excel .campo-fechas-excel').forEach(el => el.style.display = 'block');
+    }
+  }
+
+  function actualizarCampos() {
+    const tipo = document.getElementById('tipo-reporte').value;
+    document.querySelectorAll('#form-reporte-pdf .campo-mes, #form-reporte-pdf .campo-anio, #form-reporte-pdf .campo-fechas').forEach(el => el.style.display = 'none');
+
+    if (tipo === 'mensual') {
+      document.querySelector('#form-reporte-pdf .campo-mes').style.display = 'block';
+    } else if (tipo === 'anual') {
+      document.querySelector('#form-reporte-pdf .campo-anio').style.display = 'block';
+    } else if (tipo === 'personalizado') {
+      document.querySelectorAll('#form-reporte-pdf .campo-fechas').forEach(el => el.style.display = 'block');
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    actualizarCampos(); // Al cargar
+    actualizarCamposExcel();
+    actualizarCampos();
+    document.getElementById('tipo-reporte-excel').addEventListener('change', actualizarCamposExcel);
     document.getElementById('tipo-reporte').addEventListener('change', actualizarCampos);
   });
 </script>

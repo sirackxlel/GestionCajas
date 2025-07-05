@@ -14,19 +14,43 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 import io
 @login_required
 def generar_reporte_excel(request):
-    cajas = Caja.objects.select_related('entidad__proceso', 'responsable').all()
+    """Genera un reporte en formato Excel filtrado por tipo, proceso, entidad, estado y usuario."""
+    cajas = Caja.objects.select_related("entidad__proceso", "responsable").all()
 
-    # Filtros
-    fecha_inicio = request.GET.get('fecha_inicio')
-    fecha_fin = request.GET.get('fecha_fin')
-    entidad_id = request.GET.get('entidad')
-    estado = request.GET.get('estado')
-    usuario_id = request.GET.get('usuario')
+    tipo = request.GET.get("tipo", "mensual")
+    mes = request.GET.get("mes")
+    year = request.GET.get("year")
+    fecha_inicio = request.GET.get("fecha_inicio")
+    fecha_fin = request.GET.get("fecha_fin")
+    proceso_id = request.GET.get("proceso")
+    entidad_id = request.GET.get("entidad")
+    estado = request.GET.get("estado")
+    usuario_id = request.GET.get("usuario")
 
-    if fecha_inicio:
-        cajas = cajas.filter(fecha_asignacion__gte=parse_date(fecha_inicio))
-    if fecha_fin:
-        cajas = cajas.filter(fecha_asignacion__lte=parse_date(fecha_fin))
+    # Filtrado por tipo de reporte
+    if tipo == "mensual" and mes:
+        try:
+            y, m = mes.split("-")
+            cajas = cajas.filter(
+                fecha_asignacion__year=int(y),
+                fecha_asignacion__month=int(m),
+            )
+        except ValueError:
+            pass
+    elif tipo == "anual" and year:
+        try:
+            cajas = cajas.filter(fecha_asignacion__year=int(year))
+        except ValueError:
+            pass
+    elif tipo == "personalizado":
+        if fecha_inicio:
+            cajas = cajas.filter(fecha_asignacion__gte=parse_date(fecha_inicio))
+        if fecha_fin:
+            cajas = cajas.filter(fecha_asignacion__lte=parse_date(fecha_fin))
+
+    # Filtros adicionales
+    if proceso_id:
+        cajas = cajas.filter(entidad__proceso_id=proceso_id)
     if entidad_id:
         cajas = cajas.filter(entidad_id=entidad_id)
     if estado:
@@ -43,7 +67,7 @@ def generar_reporte_excel(request):
             'Proceso': c.entidad.proceso.nombre if c.entidad and c.entidad.proceso else '',
             'Estado': c.entidad.proceso.estado if c.entidad and c.entidad.proceso else '',
             'Responsable': c.responsable.username if c.responsable else '',
-            'Fecha Asignación': c.fecha_asignacion
+            'Fecha Asignación': c.fecha_asignacion.strftime('%Y-%m-%d') if c.fecha_asignacion else '',
         })
 
     df = pd.DataFrame(data)
@@ -51,7 +75,7 @@ def generar_reporte_excel(request):
     response['Content-Disposition'] = 'attachment; filename="reporte_cajas.xlsx"'
     df.to_excel(response, index=False)
     return response
-
+     
 @login_required
 def generar_reporte_pdf(request):
     """Genera un reporte en formato PDF filtrado por tipo y proceso."""
