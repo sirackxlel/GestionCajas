@@ -39,7 +39,11 @@ def priorizar_entidad(request, entidad_id):
     entidad = get_object_or_404(Entidad, id=entidad_id)
     Entidad.objects.update(activa=False)
     entidad.activa = True
-    entidad.save()
+    entidad.save() 
+    proceso = entidad.proceso
+    if proceso.estado == "pendiente":
+        proceso.estado = "en_curso"
+        proceso.save()
     messages.success(request, 'Entidad priorizada correctamente')
     return redirect('lista_entidades')
 

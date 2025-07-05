@@ -53,16 +53,34 @@ def asignar_caja(request):
         return JsonResponse({'ok': True, 'mensaje': 'Caja asignada correctamente'})
     messages.success(request, 'Caja asignada correctamente')
     return redirect('historial')
+    
 @login_required
 def crear_caja(request):
+    entidad_seleccionada = None
+
     if request.method == 'POST':
         numero = request.POST['numero']
         entidad_id = request.POST['entidad']
         entidad = get_object_or_404(Entidad, id=entidad_id)
-        Caja.objects.create(numero=numero, entidad=entidad)
-        return redirect('lista_cajas')  
+
+        # Verificar si ya existe una caja con ese número
+        if Caja.objects.filter(numero=numero).exists():
+            messages.error(request, f"Ya existe una caja con el número {numero}.")
+        else:
+            try:
+                Caja.objects.create(numero=numero, entidad=entidad)
+                messages.success(request, f"Caja número {numero} creada exitosamente.")
+                return redirect('crear_caja')  # 🔄 Redirecciona para evitar reenvío del formulario
+            except Exception as e:
+                messages.error(request, f"Error al crear la caja: {str(e)}")
+
+        entidad_seleccionada = int(entidad_id)  # ✅ Retener selección del usuario
+
     entidades = Entidad.objects.all()
-    return render(request, 'cajas/crear.html', {'entidades': entidades})
+    return render(request, 'cajas/crear.html', {
+        'entidades': entidades,
+        'entidad_seleccionada': entidad_seleccionada
+    })
 
 @login_required
 def lista_cajas(request):
@@ -116,11 +134,18 @@ def historial(request):
 @login_required
 def inicio(request):
     total_cajas = Caja.objects.count()
+    total_cajas_abiertas = Caja.objects.filter(fecha_finalizacion__isnull=True).count()  # ✅ Solo abiertas
     entidad_activa = Entidad.objects.filter(activa=True).first()
 
     if entidad_activa:
-        cajas_entidad_activa = Caja.objects.filter(entidad=entidad_activa).count()
-        cajas_proceso = Caja.objects.filter(entidad__proceso=entidad_activa.proceso).count()
+        cajas_entidad_activa = Caja.objects.filter(
+            entidad=entidad_activa,
+            fecha_finalizacion__isnull=True,
+        ).count()
+        cajas_proceso = Caja.objects.filter(
+            entidad__proceso=entidad_activa.proceso,
+            fecha_finalizacion__isnull=True,
+        ).count()
     else:
         cajas_entidad_activa = 0
         cajas_proceso = 0
@@ -133,6 +158,7 @@ def inicio(request):
 
     context = {
         'total_cajas': total_cajas,
+        'total_cajas_abiertas': total_cajas_abiertas,
         'entidad_activa': entidad_activa,
         'cajas_entidad_activa': cajas_entidad_activa,
         'cajas_proceso': cajas_proceso,

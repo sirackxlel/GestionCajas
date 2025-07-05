@@ -1,20 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}Registrar Caja{% endblock %}
+
 {% block content %}
 <h2>➕ Registrar Caja</h2>
 
-<form method="POST">
+<form method="POST" id="crear-form">
   {% csrf_token %}
   <div class="mb-3">
     <label for="numero" class="form-label">Número de Caja</label>
-    <input type="text" name="numero" class="form-control" required>
+    <input type="text" name="numero" class="form-control" id="numero" required autofocus>
   </div>
 
   <div class="mb-3">
     <label for="entidad" class="form-label">Entidad Asociada</label>
     <select name="entidad" class="form-select" required>
       {% for entidad in entidades %}
-        <option value="{{ entidad.id }}">{{ entidad.nombre }}</option>
+        <option value="{{ entidad.id }}" {% if entidad.id == entidad_seleccionada %}selected{% endif %}>
+          {{ entidad.nombre }}
+        </option>
       {% endfor %}
     </select>
   </div>
@@ -22,4 +25,6 @@
   <button type="submit" class="btn btn-success">Guardar</button>
   <a href="{% url 'lista_cajas' %}" class="btn btn-secondary">Cancelar</a>
 </form>
+
+
 {% endblock %}
